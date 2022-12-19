@@ -42,7 +42,7 @@ export default class App extends Component {
 
 		this.onPressIn = this.onPressIn.bind(this);
 		this.onPressOut = this.onPressOut.bind(this);
-    this.pressTextContainer = this.pressTextContainer.bind(this);
+		this.pressTextContainer = this.pressTextContainer.bind(this);
 	}
 
 	onPressIn() {
@@ -96,7 +96,7 @@ export default class App extends Component {
 	}
 
 	pressTextContainer() {
-    const { automaticModeEnabled, text, morseSequence } = this.state;
+    		const { automaticModeEnabled, text, morseSequence } = this.state;
 		if (!automaticModeEnabled && text != ORIGINAL_MESSAGE_BY_SAMUEL_MORSE) {
 			if (morseSequence.length === 0) {
 				this.setState({text: text + ' '});
@@ -145,47 +145,43 @@ export default class App extends Component {
 		
 		return (
 			<View style={styles.container}>
-        <TouchableWithoutFeedback style={{flex: 1}} onPress={this.pressTextContainer}>
-          <View style={styles.textContainer}>
-            <View>
-              <Text style={{fontSize: 48}}>{currentCharacter}</Text>
-            </View>
-            <Text style={styles.text}>{text}</Text>
-            <Animated.View style={[styles.ditDahTextOverlay, {opacity: textTapFadeAnim, backgroundColor: color}]}>
-              <Animated.Text style={styles.ditDahText}>{ditDahText}</Animated.Text>
-            </Animated.View>
-          </View>
-        </TouchableWithoutFeedback>
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <Text style={[styles.automaticModeText , {opacity: automaticModeEnabled ? 1 : 0.5}]}>Automatic character check</Text>
-          <Switch
-            onValueChange={(value) => this.setState({automaticModeEnabled: value})}
-            style={{marginBottom: 10}}
-            value={automaticModeEnabled} />
-          <FAIcon.Button name='eye' 
-            onPress={() => this.setState({showMorseTreeImage: !showMorseTreeImage})}
-          >
-            {morseTreeButtonCaption}
-          </FAIcon.Button>
-          <FAIcon.Button 
-            name='remove' backgroundColor='#8D0508' 
-            onPress={() => this.setState({text: ORIGINAL_MESSAGE_BY_SAMUEL_MORSE, morseSequence: [], currentCharacter: ''})}
-          >
-            Clear all text
-          </FAIcon.Button>
-        </View>
-        <TouchableOpacity style={styles.touchable} activeOpacity={0.8}
-          onPressIn={this.onPressIn} onPressOut={this.onPressOut} delayPressIn={0} delayPressOut={0}>
-          <View style={{flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-            <FAIcon name={'hand-pointer-o'} size={48} style={{opacity: 0.6}}></FAIcon>
-            <Text style={styles.touchableText}>press</Text>
-            {showMorseTreeImage ? (<Image
-              resizeMode="contain"
-              source={require('./assets/morse-tree.png')}
-              style={{ width: Dimensions.get('window').width }}
-            />) : null}
-          </View>
-        </TouchableOpacity>
+				<TouchableWithoutFeedback style={{flex: 1}} onPress={this.pressTextContainer}>
+					<View style={styles.textContainer}>
+						<View>
+							<Text style={{fontSize: 48}}>{currentCharacter}</Text>
+						</View>
+						<Text style={styles.text}>{text}</Text>
+						<Animated.View style={[styles.ditDahTextOverlay, {opacity: textTapFadeAnim, backgroundColor: color}]}>
+							<Animated.Text style={styles.ditDahText}>{ditDahText}</Animated.Text>
+						</Animated.View>
+					</View>
+				</TouchableWithoutFeedback>
+				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+					<Text style={[styles.automaticModeText , {opacity: automaticModeEnabled ? 1 : 0.5}]}>Automatic character check</Text>
+					<Switch onValueChange={(value) => this.setState({automaticModeEnabled: value})}
+						style={{marginBottom: 10}}
+						value={automaticModeEnabled} />
+					<FAIcon.Button name='eye' onPress={() => this.setState({showMorseTreeImage: !showMorseTreeImage})}>
+						{morseTreeButtonCaption}
+					</FAIcon.Button>
+					<FAIcon.Button name='remove' backgroundColor='#8D0508' 
+						onPress={() => this.setState({text: ORIGINAL_MESSAGE_BY_SAMUEL_MORSE, morseSequence: [], currentCharacter: ''})}
+					>
+						Clear all text
+					</FAIcon.Button>
+				</View>
+				<TouchableOpacity style={styles.touchable} activeOpacity={0.8}
+					onPressIn={this.onPressIn} onPressOut={this.onPressOut} delayPressIn={0} delayPressOut={0}>
+					<View style={{flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+						<FAIcon name={'hand-pointer-o'} size={48} style={{opacity: 0.6}}></FAIcon>
+						<Text style={styles.touchableText}>press</Text>
+						{showMorseTreeImage ? (
+							<Image
+							resizeMode="contain"
+							source={require('./assets/morse-tree.png')}
+							style={{ width: Dimensions.get('window').width }}/>) : null}
+					</View>
+				</TouchableOpacity>
 			</View>
 		);
 	}
