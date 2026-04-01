@@ -5,7 +5,6 @@ import {
   View,
   Image,
   Dimensions,
-  Vibration,
 } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -17,6 +16,7 @@ import * as Haptics from 'expo-haptics';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMorseStore } from '../store/morseStore';
 import { TAPTYPE_DIT, TAPTYPE_DAH, PRESS_DURATION_THRESHOLD, DIT_DURATION, DAH_DURATION, CHARACTER_DELAY_DURATION } from '../utility/constants';
+import { playDitTone, playDahTone } from '../utility/morseAudio';
 
 export const TapZone: React.FC = () => {
   const showMorseTree = useMorseStore((state) => state.showMorseTree);
@@ -64,9 +64,10 @@ export const TapZone: React.FC = () => {
     }
   };
 
-  const performDit = () => {
+  const performDit = async () => {
     setDitDahText('dit');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await playDitTone();
     addTap(TAPTYPE_DIT);
 
     setTimeout(() => {
@@ -74,9 +75,10 @@ export const TapZone: React.FC = () => {
     }, DIT_DURATION);
   };
 
-  const performDah = () => {
+  const performDah = async () => {
     setDitDahText('dah');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await playDahTone();
     addTap(TAPTYPE_DAH);
 
     setTimeout(() => {
@@ -116,7 +118,7 @@ export const TapZone: React.FC = () => {
       <Animated.View style={[styles.container, scaleStyle]}>
         <View style={styles.content}>
           <MaterialCommunityIcons
-            name="hand-right"
+            name="pan-right"
             size={48}
             color="white"
             style={styles.icon}
