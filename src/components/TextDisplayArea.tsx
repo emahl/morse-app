@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   interpolate,
   Extrapolate,
+  withTiming,
 } from 'react-native-reanimated';
 import { useMorseStore } from '../store/morseStore';
 
@@ -19,6 +20,24 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
 
   const backgroundAnim = useSharedValue(300);
   const fadeAnim = useSharedValue(0);
+
+  // Trigger animations when ditDahText changes
+  useEffect(() => {
+    if (ditDahText) {
+      // Animate in: fade to opaque, background flashes
+      backgroundAnim.value = withTiming(0, { duration: ditDahText === 'dit' ? 150 : 300 });
+      fadeAnim.value = withTiming(1, { duration: 50 });
+
+      // Animate out after the press duration
+      const duration = ditDahText === 'dit' ? 150 : 300;
+      const timeoutId = setTimeout(() => {
+        fadeAnim.value = withTiming(0, { duration: 100 });
+        backgroundAnim.value = withTiming(300, { duration: 100 });
+      }, duration);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [ditDahText, backgroundAnim, fadeAnim]);
 
   const backgroundStyle = useAnimatedStyle(() => {
     const color = interpolate(

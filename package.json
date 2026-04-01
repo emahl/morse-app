@@ -23,11 +23,17 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.1.0",
     "babel-jest": "^30.3.0",
     "babel-preset-expo": "^55.0.13",
     "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "react-dom": "^19.1.0",
+    "react-native-web": "^0.20.0",
     "typescript": "~5.9.2"
   },
   "private": true
