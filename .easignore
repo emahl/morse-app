@@ -1,0 +1,22 @@
+# EAS Build ignore file
+# Files and directories to ignore when uploading to EAS Build
+
+node_modules
+ios/Pods
+android/.gradle
+.git
+.env
+.env.local
+*.log
+.DS_Store
+.idea
+.vscode
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+coverage
+dist
+build
+.expo-shared
