@@ -115,7 +115,7 @@ export const TapZone: React.FC = () => {
 
   return (
     <GestureDetector gesture={longPressGesture}>
-      <Animated.View style={[styles.container, scaleStyle]}>
+      <Animated.View style={[styles.container, scaleStyle]} testID="tap-zone">
         <View style={styles.content}>
           <MaterialCommunityIcons
             name="pan-right"

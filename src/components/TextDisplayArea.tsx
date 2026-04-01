@@ -43,7 +43,7 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
     const color = interpolate(
       backgroundAnim.value,
       [0, 300],
-      [0.5, 1], // Green to white opacity
+      [0.5, 0], // Green flash fades to transparent at rest
       Extrapolate.CLAMP
     );
 
@@ -59,11 +59,11 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
   return (
     <TouchableWithoutFeedback onPress={onTextAreaPress}>
       <View style={styles.container}>
-        <Text style={styles.currentCharacter}>{currentCharacter}</Text>
-        <Text style={styles.text}>{text}</Text>
+        <Text style={styles.currentCharacter} testID="current-character">{currentCharacter}</Text>
+        <Text style={styles.text} testID="accumulated-text">{text}</Text>
 
-        <Animated.View style={[styles.ditDahOverlay, backgroundStyle]}>
-          <Animated.Text style={[styles.ditDahText, fadeStyle]}>
+        <Animated.View style={[styles.ditDahOverlay, backgroundStyle]} pointerEvents="none">
+          <Animated.Text style={[styles.ditDahText, fadeStyle]} testID="dit-dah-text">
             {ditDahText}
           </Animated.Text>
         </Animated.View>

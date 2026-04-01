@@ -1,6 +1,7 @@
 module.exports = {
   testEnvironment: 'jsdom',
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+  testPathIgnorePatterns: ['<rootDir>/e2e/'],
   transform: {
     '^.+\\.tsx?$': 'babel-jest',
   },
@@ -30,5 +31,4 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(react-native-web|react-native-gesture-handler|react-native|react-native-reanimated|@react-native|@react-navigation|@expo)/)',
   ],
-  testPathIgnorePatterns: ['/node_modules/', '/.git/'],
 };

@@ -27,6 +27,7 @@ export const ControlsArea: React.FC<ControlsAreaProps> = ({ onShowTreePress, onC
           value={automaticModeEnabled}
           onValueChange={toggleAutoMode}
           style={styles.switch}
+          testID="auto-mode-switch"
         />
       </View>
 
