@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   Dimensions,
 } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -19,7 +18,6 @@ import { TAPTYPE_DIT, TAPTYPE_DAH, PRESS_DURATION_THRESHOLD, DIT_DURATION, DAH_D
 import { playDitTone, playDahTone } from '../utility/morseAudio';
 
 export const TapZone: React.FC = () => {
-  const showMorseTree = useMorseStore((state) => state.showMorseTree);
   const automaticModeEnabled = useMorseStore((state) => state.automaticModeEnabled);
   const addTap = useMorseStore((state) => state.addTap);
   const commitCharacter = useMorseStore((state) => state.commitCharacter);
@@ -138,14 +136,6 @@ export const TapZone: React.FC = () => {
             style={styles.icon}
           />
           <Text style={styles.label}>press</Text>
-
-          {showMorseTree && (
-            <Image
-              source={require('../../assets/morse-tree.png')}
-              style={styles.treeImage}
-              resizeMode="contain"
-            />
-          )}
         </View>
       </Animated.View>
     </GestureDetector>
@@ -185,11 +175,5 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     color: '#FF7A00',
     opacity: 0.4,
-  },
-  treeImage: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').width,
-    marginTop: 16,
-    opacity: 0.7,
   },
 });

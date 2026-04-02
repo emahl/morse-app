@@ -1,6 +1,6 @@
 import { TAPTYPE_DIT, TAPTYPE_DAH, TapType } from './constants';
 
-interface MorseNode {
+export interface MorseNode {
   text: string;
   left: MorseNode | null;
   right: MorseNode | null;
@@ -79,4 +79,4 @@ const COMMA: MorseNode = { text: ',', left: ZERO, right: NINE };
 const O: MorseNode = { text: 'O', left: COMMA, right: PERIOD };
 const M: MorseNode = { text: 'M', left: O, right: G };
 const T: MorseNode = { text: 'T', left: M, right: N };
-const ROOT: MorseNode = { text: '', left: T, right: E };
+export const ROOT: MorseNode = { text: '', left: T, right: E };

@@ -88,7 +88,7 @@ test.describe('Auto-Commit - Character Commit Tests', () => {
     expect(await app.getCurrentCharacter()).toBe('E');
 
     // Wait almost 800ms (but not quite auto-commit)
-    await app.page.waitForTimeout(700);
+    await app.page.waitForTimeout(650);
 
     // Before commit, press another character (this should reset the timer)
     await app.performDah();

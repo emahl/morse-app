@@ -52,11 +52,11 @@ interface TreeButtonProps {
 
 const TreeButton: React.FC<TreeButtonProps> = ({ onPress }) => {
   const showMorseTree = useMorseStore((state) => state.showMorseTree);
-  const caption = showMorseTree ? 'Hide tree' : 'Show tree';
+  const caption = showMorseTree ? 'Got it!' : 'Need help?';
 
   return (
     <TouchableOpacity style={styles.iconButton} onPress={onPress}>
-      <MaterialCommunityIcons name="eye" size={20} color="#FF7A00" />
+      <MaterialCommunityIcons name="help-circle-outline" size={20} color="#FF7A00" />
       <Text style={styles.iconButtonLabel}>{caption}</Text>
     </TouchableOpacity>
   );

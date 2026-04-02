@@ -4,6 +4,7 @@ import { useMorseStore } from '../store/morseStore';
 import { TextDisplayArea } from './TextDisplayArea';
 import { ControlsArea } from './ControlsArea';
 import { TapZone } from './TapZone';
+import { MorseTreeOverlay } from './MorseTreeOverlay';
 
 export const MorseScreen: React.FC = () => {
   const automaticModeEnabled = useMorseStore((state) => state.automaticModeEnabled);
@@ -12,6 +13,7 @@ export const MorseScreen: React.FC = () => {
   const insertSpace = useMorseStore((state) => state.insertSpace);
   const toggleMorseTree = useMorseStore((state) => state.toggleMorseTree);
   const clearAll = useMorseStore((state) => state.clearAll);
+  const showMorseTree = useMorseStore((state) => state.showMorseTree);
 
   const handleTextAreaPress = () => {
     if (!automaticModeEnabled) {
@@ -31,6 +33,7 @@ export const MorseScreen: React.FC = () => {
         onClearPress={clearAll}
       />
       <TapZone />
+      <MorseTreeOverlay visible={showMorseTree} />
     </View>
   );
 };

@@ -42,7 +42,7 @@ test.describe('Controls Area - Button & Switch Tests', () => {
 
   test('show tree button is clickable', async () => {
     // Locate the button by its text content
-    const button = app.page.locator('text=/Show tree|Hide tree/');
+    const button = app.page.locator('text=/Need help\\?|Got it\\!/');
 
     // Button should be visible initially
     await expect(button).toBeVisible();

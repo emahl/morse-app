@@ -75,10 +75,10 @@ export class MorseApp {
   }
 
   /**
-   * Click the "Show tree" / "Hide tree" button
+   * Click the "Need help?" / "Got it!" button
    */
   async clickShowTree() {
-    await this.page.locator('text=/Show tree|Hide tree/').click();
+    await this.page.locator('text=/Need help\\?|Got it\\!/').click();
   }
 
   /**
