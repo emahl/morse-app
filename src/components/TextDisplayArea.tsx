@@ -20,35 +20,38 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
 
   const backgroundAnim = useSharedValue(300);
   const fadeAnim = useSharedValue(0);
+  const glowAnim = useSharedValue(0);
 
   // Trigger animations when ditDahText changes
   useEffect(() => {
     if (ditDahText) {
-      // Animate in: fade to opaque, background flashes
+      // Animate in: fade to opaque, background flashes, glow pulses
       backgroundAnim.value = withTiming(0, { duration: ditDahText === 'dit' ? 150 : 300 });
       fadeAnim.value = withTiming(1, { duration: 50 });
+      glowAnim.value = withTiming(1, { duration: 80 });
 
       // Animate out after the press duration
       const duration = ditDahText === 'dit' ? 150 : 300;
       const timeoutId = setTimeout(() => {
         fadeAnim.value = withTiming(0, { duration: 100 });
         backgroundAnim.value = withTiming(300, { duration: 100 });
+        glowAnim.value = withTiming(0, { duration: 150 });
       }, duration);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [ditDahText, backgroundAnim, fadeAnim]);
+  }, [ditDahText, backgroundAnim, fadeAnim, glowAnim]);
 
   const backgroundStyle = useAnimatedStyle(() => {
-    const color = interpolate(
+    const alpha = interpolate(
       backgroundAnim.value,
       [0, 300],
-      [0.5, 0], // Green flash fades to transparent at rest
+      [0.35, 0], // Orange flash fades to transparent at rest
       Extrapolate.CLAMP
     );
 
     return {
-      backgroundColor: `rgba(245, 252, 255, ${color})`,
+      backgroundColor: `rgba(255, 122, 0, ${alpha})`,
     };
   });
 
@@ -56,10 +59,16 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
     opacity: fadeAnim.value,
   }));
 
+  const glowStyle = useAnimatedStyle(() => ({
+    textShadowColor: '#FF7A00',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: interpolate(glowAnim.value, [0, 1], [0, 18], Extrapolate.CLAMP),
+  }));
+
   return (
     <TouchableWithoutFeedback onPress={onTextAreaPress}>
       <View style={styles.container}>
-        <Text style={styles.currentCharacter} testID="current-character">{currentCharacter}</Text>
+        <Animated.Text style={[styles.currentCharacter, glowStyle]} testID="current-character">{currentCharacter}</Animated.Text>
         <Text style={styles.text} testID="accumulated-text">{text}</Text>
 
         <Animated.View style={[styles.ditDahOverlay, backgroundStyle]} pointerEvents="none">
@@ -77,18 +86,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#141414',
+    paddingVertical: 16,
   },
   currentCharacter: {
-    fontSize: 48,
-    fontWeight: '600',
-    marginBottom: 16,
+    fontSize: 56,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 12,
   },
   text: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'monospace',
     textAlign: 'center',
     paddingHorizontal: 16,
+    color: '#CCCCCC',
   },
   ditDahOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -98,6 +110,6 @@ const styles = StyleSheet.create({
   ditDahText: {
     fontSize: 64,
     fontFamily: 'monospace',
-    opacity: 0.4,
+    color: '#FF7A00',
   },
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
+import { StyleSheet, Switch, Text, View, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMorseStore } from '../store/morseStore';
 
@@ -15,6 +15,11 @@ export const ControlsArea: React.FC<ControlsAreaProps> = ({ onShowTreePress, onC
   return (
     <View style={styles.container}>
       <View style={styles.modeSection}>
+        <MaterialCommunityIcons
+          name="timer-outline"
+          size={20}
+          color={automaticModeEnabled ? '#FF7A00' : '#666666'}
+        />
         <Text
           style={[
             styles.modeLabel,
@@ -28,6 +33,8 @@ export const ControlsArea: React.FC<ControlsAreaProps> = ({ onShowTreePress, onC
           onValueChange={toggleAutoMode}
           style={styles.switch}
           testID="auto-mode-switch"
+          trackColor={{ false: '#333333', true: '#FF7A00' }}
+          thumbColor="#FFFFFF"
         />
       </View>
 
@@ -48,17 +55,10 @@ const TreeButton: React.FC<TreeButtonProps> = ({ onPress }) => {
   const caption = showMorseTree ? 'Hide tree' : 'Show tree';
 
   return (
-    <View style={styles.buttonWrapper}>
-      <MaterialCommunityIcons.Button
-        name="eye"
-        size={20}
-        onPress={onPress}
-        backgroundColor="#007AFF"
-        color="white"
-      >
-        {caption}
-      </MaterialCommunityIcons.Button>
-    </View>
+    <TouchableOpacity style={styles.iconButton} onPress={onPress}>
+      <MaterialCommunityIcons name="eye" size={20} color="#FF7A00" />
+      <Text style={styles.iconButtonLabel}>{caption}</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -68,44 +68,51 @@ interface ClearButtonProps {
 
 const ClearButton: React.FC<ClearButtonProps> = ({ onPress }) => {
   return (
-    <View style={styles.buttonWrapper}>
-      <MaterialCommunityIcons.Button
-        name="delete"
-        size={20}
-        onPress={onPress}
-        backgroundColor="#8D0508"
-        color="white"
-      >
-        Clear all text
-      </MaterialCommunityIcons.Button>
-    </View>
+    <TouchableOpacity style={styles.iconButton} onPress={onPress}>
+      <MaterialCommunityIcons name="delete" size={20} color="#FF7A00" />
+      <Text style={styles.iconButtonLabel}>Clear all text</Text>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    height: 72,
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    backgroundColor: '#1C1C1C',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#2A2A2A',
   },
   modeSection: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    gap: 8,
   },
   modeLabel: {
-    color: 'black',
-    fontSize: 16,
+    color: '#8A8A8A',
+    fontSize: 11,
     fontFamily: 'monospace',
-    marginBottom: 8,
   },
   switch: {
-    marginBottom: 10,
+    marginLeft: 4,
   },
   buttonSection: {
-    gap: 12,
+    flexDirection: 'row',
+    gap: 16,
   },
-  buttonWrapper: {
-    marginVertical: 4,
+  iconButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  iconButtonLabel: {
+    fontSize: 10,
+    color: '#8A8A8A',
+    fontFamily: 'monospace',
+    marginTop: 2,
   },
 });

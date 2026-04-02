@@ -30,9 +30,16 @@ export const TapZone: React.FC = () => {
   const autoCommitTimer = useRef<NodeJS.Timeout | null>(null);
 
   const scale = useSharedValue(1);
+  const rippleScale = useSharedValue(0);
+  const rippleOpacity = useSharedValue(0);
 
   const scaleStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
+  }));
+
+  const rippleStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: rippleScale.value }],
+    opacity: rippleOpacity.value,
   }));
 
   const handlePressStart = () => {
@@ -44,6 +51,12 @@ export const TapZone: React.FC = () => {
     }
 
     scale.value = withTiming(0.95, { duration: 100 });
+
+    // Start ripple animation
+    rippleScale.value = 0;
+    rippleOpacity.value = 0.5;
+    rippleScale.value = withTiming(1, { duration: 450 });
+    rippleOpacity.value = withTiming(0, { duration: 450 });
   };
 
   const handlePressEnd = () => {
@@ -117,6 +130,7 @@ export const TapZone: React.FC = () => {
     <GestureDetector gesture={longPressGesture}>
       <Animated.View style={[styles.container, scaleStyle]} testID="tap-zone">
         <View style={styles.content}>
+          <Animated.View style={[styles.ripple, rippleStyle]} pointerEvents="none" />
           <MaterialCommunityIcons
             name="pan-right"
             size={48}
@@ -140,10 +154,11 @@ export const TapZone: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
+    flex: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'cadetblue',
+    backgroundColor: '#0A0A0A',
+    overflow: 'hidden',
   },
   content: {
     flex: 1,
@@ -151,19 +166,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+  ripple: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: '#FF7A00',
+    alignSelf: 'center',
+    top: '50%',
+    marginTop: -150,
+  },
   icon: {
-    opacity: 0.6,
+    opacity: 0.2,
     marginBottom: 8,
   },
   label: {
-    fontSize: 32,
+    fontSize: 28,
     fontFamily: 'monospace',
-    color: 'white',
-    opacity: 0.8,
+    color: '#FF7A00',
+    opacity: 0.4,
   },
   treeImage: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').width,
     marginTop: 16,
+    opacity: 0.7,
   },
 });

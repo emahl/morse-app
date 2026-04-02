@@ -7,7 +7,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <MorseScreen />
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </GestureHandlerRootView>
   );
 }
