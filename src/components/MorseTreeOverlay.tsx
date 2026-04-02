@@ -22,10 +22,11 @@ const TOTAL_WIDTH = Math.min(availableWidth * 0.95, 960);
 
 // Scale node and cell sizes proportionally based on tree width
 const CELL_SIZE = TOTAL_WIDTH / Math.pow(2, MAX_LEVEL); // Scales with TOTAL_WIDTH
-const LEVEL_HEIGHT = 54;
-const TREE_HEIGHT = MAX_LEVEL * LEVEL_HEIGHT;
-const NODE_RADIUS = Math.max(8, CELL_SIZE / 2.5); // Scale node radius, min 8px
-const CARD_HEIGHT = Math.min(TREE_HEIGHT + 100, windowHeight * 0.65);
+const LEVEL_HEIGHT = 44; // Compact spacing (was 54px)
+const TREE_HEIGHT = MAX_LEVEL * LEVEL_HEIGHT; // 220px total
+const NODE_RADIUS = 10; // Fixed size, not scaled
+// Card height for animation: tree + header + hint + padding
+const CARD_HEIGHT = TREE_HEIGHT + 70; // ~290px (220 tree + 70 header/hint/padding)
 
 interface PositionedNode {
   text: string;
@@ -304,7 +305,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 16,
     overflow: 'hidden',
-    maxHeight: windowHeight * 0.65,
     shadowColor: '#FF7A00',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.15,

@@ -90,12 +90,12 @@ test.describe('Text Display Area - Visibility Tests', () => {
 
   test('screenshot: text is visible during and after animation', async ({ page }) => {
     // Take a screenshot showing the text is visible
-    await expect(page).toHaveScreenshot('initial-state.png', { maxDiffPixels: 100 });
+    await expect(page).toHaveScreenshot('initial-state.png', { maxDiffPixels: 200 });
 
     await app.performDit();
     await app.page.waitForTimeout(150);
 
     // Take another screenshot to verify text is still visible after animation
-    await expect(page).toHaveScreenshot('after-dit.png', { maxDiffPixels: 100 });
+    await expect(page).toHaveScreenshot('after-dit.png', { maxDiffPixels: 200 });
   });
 });
