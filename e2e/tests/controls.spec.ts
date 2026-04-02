@@ -89,4 +89,14 @@ test.describe('Controls Area - Button & Switch Tests', () => {
     const cleared = await app.getAccumulatedText();
     expect(cleared).toContain('[What hath God wrought?]');
   });
+
+  test('tree overlay shows Morse Tree header when Need help? button is clicked', async () => {
+    // Click "Need help?" button to show tree
+    await app.clickShowTree();
+    await app.page.waitForTimeout(500);
+
+    // Morse Tree header should be visible
+    const treeHeader = app.page.locator('text=Morse Tree');
+    await expect(treeHeader).toBeVisible();
+  });
 });

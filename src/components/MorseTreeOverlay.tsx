@@ -18,7 +18,8 @@ const TOTAL_WIDTH = CELL_SIZE * Math.pow(2, MAX_LEVEL); // 960px
 const LEVEL_HEIGHT = 54;
 const TREE_HEIGHT = MAX_LEVEL * LEVEL_HEIGHT;
 const NODE_RADIUS = 12;
-const CARD_HEIGHT = TREE_HEIGHT + 100;
+const windowHeight = Dimensions.get('window').height;
+const CARD_HEIGHT = Math.min(TREE_HEIGHT + 100, windowHeight * 0.65);
 
 interface PositionedNode {
   text: string;
@@ -122,6 +123,7 @@ function getActiveNodeKeys(sequence: TapType[]): Set<string> {
   const activeKeys = new Set<string>();
   let currentNode = ROOT;
   let index = 0;
+  let level = 0;
 
   activeKeys.add('0-0'); // Root is always in the path
 
@@ -129,16 +131,15 @@ function getActiveNodeKeys(sequence: TapType[]): Set<string> {
     const isDah = tap === TAPTYPE_DAH;
     const nextIndex = isDah ? index * 2 : index * 2 + 1;
     const nextNode = isDah ? currentNode.left : currentNode.right;
-    const nextLevel = Math.log2(nextIndex + 1); // Find level from index
 
     if (!nextNode) break;
 
-    const levelFloor = Math.floor(nextLevel);
-    activeKeys.add(`${levelFloor}-${nextIndex >> (MAX_LEVEL - levelFloor)}`);
-    activeKeys.add(`${Math.floor(nextLevel - 1)}-${index}-${isDah ? 'dah' : 'dit'}`);
+    activeKeys.add(`${level + 1}-${nextIndex}`);
+    activeKeys.add(`${level}-${index}-${isDah ? 'dah' : 'dit'}`);
 
     currentNode = nextNode;
     index = nextIndex;
+    level += 1;
   }
 
   return activeKeys;
@@ -150,11 +151,11 @@ interface MorseTreeOverlayProps {
 
 export const MorseTreeOverlay: React.FC<MorseTreeOverlayProps> = ({ visible }) => {
   const morseSequence = useMorseStore((state) => state.morseSequence);
-  const translateY = useSharedValue(-CARD_HEIGHT);
+  const translateY = useSharedValue(CARD_HEIGHT);
 
   // Update animation based on visible prop
   React.useEffect(() => {
-    translateY.value = withTiming(visible ? 0 : -CARD_HEIGHT, { duration: 280 });
+    translateY.value = withTiming(visible ? 0 : CARD_HEIGHT, { duration: 280 });
   }, [visible, translateY]);
 
   // Compute active nodes/edges
@@ -257,8 +258,8 @@ export const MorseTreeOverlay: React.FC<MorseTreeOverlayProps> = ({ visible }) =
     <View style={styles.overlay} pointerEvents="none">
       <Animated.View style={[styles.card, cardStyle]}>
         <Text style={styles.header}>Morse Tree</Text>
-        <Text style={styles.hint}>· = short  │  − = long</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <Text style={styles.hint}>· = short (right)  │  − = long (left)</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }}>
           <View
             style={{
               width: TOTAL_WIDTH,
@@ -284,20 +285,23 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
   },
   card: {
     backgroundColor: '#141414',
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-    borderBottomWidth: 1,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
     borderColor: '#2A2A2A',
     paddingTop: 12,
     paddingBottom: 16,
     overflow: 'hidden',
+    maxHeight: windowHeight * 0.65,
     shadowColor: '#FF7A00',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 8,
