@@ -13,12 +13,18 @@ import { TAPTYPE_DIT, TAPTYPE_DAH, TapType } from '../utility/constants';
 
 // Layout constants
 const MAX_LEVEL = 5;
-const CELL_SIZE = 30;
-const TOTAL_WIDTH = CELL_SIZE * Math.pow(2, MAX_LEVEL); // 960px
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+// Make tree width responsive: fit to available screen width, max 960px
+const availableWidth = Math.max(windowWidth - 40, 200); // 20px padding each side, min 200px
+const TOTAL_WIDTH = Math.min(availableWidth * 0.95, 960);
+
+// Scale node and cell sizes proportionally based on tree width
+const CELL_SIZE = TOTAL_WIDTH / Math.pow(2, MAX_LEVEL); // Scales with TOTAL_WIDTH
 const LEVEL_HEIGHT = 54;
 const TREE_HEIGHT = MAX_LEVEL * LEVEL_HEIGHT;
-const NODE_RADIUS = 12;
-const windowHeight = Dimensions.get('window').height;
+const NODE_RADIUS = Math.max(8, CELL_SIZE / 2.5); // Scale node radius, min 8px
 const CARD_HEIGHT = Math.min(TREE_HEIGHT + 100, windowHeight * 0.65);
 
 interface PositionedNode {
@@ -259,13 +265,12 @@ export const MorseTreeOverlay: React.FC<MorseTreeOverlayProps> = ({ visible }) =
       <Animated.View style={[styles.card, cardStyle]}>
         <Text style={styles.header}>Morse Tree</Text>
         <Text style={styles.hint}>· = short (right)  │  − = long (left)</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1, paddingHorizontal: 10 }}>
           <View
             style={{
               width: TOTAL_WIDTH,
               height: TREE_HEIGHT,
               position: 'relative',
-              paddingHorizontal: 20,
             }}
           >
             {edges.map((edge, idx) => renderEdge(edge, idx))}
