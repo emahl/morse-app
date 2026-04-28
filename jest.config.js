@@ -22,9 +22,12 @@ module.exports = {
     '^react-native$': 'react-native-web',
     // Mock native modules
     '^react-native-reanimated$': '<rootDir>/__mocks__/react-native-reanimated.js',
+    '^react-native-gesture-handler$': '<rootDir>/__mocks__/react-native-gesture-handler.js',
     '^react-native-audio-api$': '<rootDir>/__mocks__/react-native-audio-api.js',
     '^expo-haptics$': '<rootDir>/__mocks__/expo-haptics.js',
     '^@expo/vector-icons$': '<rootDir>/__mocks__/@expo/vector-icons.js',
+    '^react-native-safe-area-context$': '<rootDir>/__mocks__/react-native-safe-area-context.js',
+    '^@react-native-async-storage/async-storage$': '<rootDir>/__mocks__/@react-native-async-storage/async-storage.js',
     // Mock image imports
     '\\.(png|jpg|jpeg|gif)$': '<rootDir>/__mocks__/fileMock.js',
   },

@@ -51,7 +51,7 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
     );
 
     return {
-      backgroundColor: `rgba(255, 122, 0, ${alpha})`,
+      backgroundColor: `rgba(232, 128, 106, ${alpha})`,
     };
   });
 
@@ -60,7 +60,7 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
   }));
 
   const glowStyle = useAnimatedStyle(() => ({
-    textShadowColor: '#FF7A00',
+    textShadowColor: '#E8806A',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: interpolate(glowAnim.value, [0, 1], [0, 18], Extrapolate.CLAMP),
   }));
@@ -83,16 +83,16 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 3,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#141414',
+    backgroundColor: '#373532',
     paddingVertical: 16,
   },
   currentCharacter: {
     fontSize: 56,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#F5F3EF',
     marginBottom: 12,
   },
   text: {
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     textAlign: 'center',
     paddingHorizontal: 16,
-    color: '#CCCCCC',
+    color: '#C8C3BE',
   },
   ditDahOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -110,6 +110,6 @@ const styles = StyleSheet.create({
   ditDahText: {
     fontSize: 64,
     fontFamily: 'monospace',
-    color: '#FF7A00',
+    color: '#E8806A',
   },
 });

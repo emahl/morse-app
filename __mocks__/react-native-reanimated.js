@@ -49,15 +49,13 @@ module.exports = {
     IDENTITY: 'identity',
   },
 
-  // Components
-  Animated: {
-    View: React.forwardRef((props, ref) => React.createElement('div', { ...props, ref })),
-    Text: React.forwardRef((props, ref) => React.createElement('span', { ...props, ref })),
-    ScrollView: React.forwardRef((props, ref) => React.createElement('div', { ...props, ref })),
-    FlatList: React.forwardRef((props, ref) => React.createElement('ul', { ...props, ref })),
-    Image: React.forwardRef((props, ref) => React.createElement('img', { ...props, ref })),
-    createAnimatedComponent: (Component) => Component,
-  },
+  // Components — exported at top level so `import Animated from '...'` resolves Animated.View etc.
+  View: React.forwardRef((props, ref) => React.createElement('div', { ...props, ref })),
+  Text: React.forwardRef((props, ref) => React.createElement('span', { ...props, ref })),
+  ScrollView: React.forwardRef((props, ref) => React.createElement('div', { ...props, ref })),
+  FlatList: React.forwardRef((props, ref) => React.createElement('ul', { ...props, ref })),
+  Image: React.forwardRef((props, ref) => React.createElement('img', { ...props, ref })),
+  createAnimatedComponent: (Component) => Component,
 
   // Advanced
   runOnJS: jest.fn((fn) => fn),

@@ -2,12 +2,14 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MorseScreen } from '../components/MorseScreen';
 import { useMorseStore } from '../store/morseStore';
+import { useNavigationStore } from '../store/navigationStore';
 import { ORIGINAL_MESSAGE } from '../utility/constants';
 
 describe('MorseScreen Integration', () => {
   beforeEach(() => {
-    const { clearAll } = useMorseStore.getState();
-    clearAll();
+    useMorseStore.getState().clearAll();
+    useMorseStore.setState({ showMorseTree: false, showSettings: false });
+    useNavigationStore.setState({ currentScreen: 'free' });
   });
 
   test('renders without crashing', () => {
@@ -20,67 +22,70 @@ describe('MorseScreen Integration', () => {
     expect(screen.getByText(ORIGINAL_MESSAGE)).toBeTruthy();
   });
 
-  test('renders all control buttons', () => {
-    render(<MorseScreen />);
-
-    // Look for button texts (mocked vector icons render children)
-    expect(screen.getByText('Show tree')).toBeTruthy();
-    expect(screen.getByText('Clear all text')).toBeTruthy();
+  test('renders show tree button by aria-label', () => {
+    const { getByLabelText } = render(<MorseScreen />);
+    expect(getByLabelText('Show morse tree')).toBeTruthy();
   });
 
-  test('toggle switch is rendered and operable', () => {
-    const { getByRole } = render(<MorseScreen />);
-    const switchElement = getByRole('switch');
+  test('renders clear button by aria-label', () => {
+    const { getByLabelText } = render(<MorseScreen />);
+    expect(getByLabelText('Clear all text')).toBeTruthy();
+  });
 
-    expect(switchElement).toBeTruthy();
+  test('renders settings button by aria-label', () => {
+    const { getByLabelText } = render(<MorseScreen />);
+    expect(getByLabelText('Open settings')).toBeTruthy();
+  });
+
+  test('renders back button by aria-label', () => {
+    const { getByLabelText } = render(<MorseScreen />);
+    expect(getByLabelText('Go back')).toBeTruthy();
   });
 
   test('clicking clear button resets text to placeholder', () => {
-    render(<MorseScreen />);
-
-    // Simulate setting some text
+    const { getByLabelText } = render(<MorseScreen />);
     useMorseStore.setState({ text: 'HELLO' });
 
-    // Find and click clear button
-    const clearButton = screen.getByText('Clear all text').closest('View') || screen.getByText('Clear all text').parentElement;
-    if (clearButton) {
-      fireEvent.click(clearButton);
-    }
+    fireEvent.click(getByLabelText('Clear all text'));
 
-    // Text should be reset to placeholder
     expect(useMorseStore.getState().text).toBe(ORIGINAL_MESSAGE);
   });
 
-  test('toggle switch changes automatic mode', () => {
-    render(<MorseScreen />);
-    const initialMode = useMorseStore.getState().automaticModeEnabled;
+  test('settings button toggles settings panel', () => {
+    const { getByLabelText } = render(<MorseScreen />);
+    expect(useMorseStore.getState().showSettings).toBe(false);
 
-    const switchElement = screen.getByRole('switch');
-    fireEvent.click(switchElement);
+    fireEvent.click(getByLabelText('Open settings'));
 
-    expect(useMorseStore.getState().automaticModeEnabled).toBe(!initialMode);
+    expect(useMorseStore.getState().showSettings).toBe(true);
   });
 
   test('show tree button toggles morse tree visibility', () => {
-    render(<MorseScreen />);
-    const initialShowTree = useMorseStore.getState().showMorseTree;
+    const { getByLabelText } = render(<MorseScreen />);
+    const initial = useMorseStore.getState().showMorseTree;
 
-    const showTreeButton = screen.getByText('Show tree').closest('View') || screen.getByText('Show tree').parentElement;
-    if (showTreeButton) {
-      fireEvent.click(showTreeButton);
-    }
+    fireEvent.click(getByLabelText('Show morse tree'));
 
-    expect(useMorseStore.getState().showMorseTree).toBe(!initialShowTree);
+    expect(useMorseStore.getState().showMorseTree).toBe(!initial);
   });
 
-  test('show tree button label changes when toggled', () => {
-    const { rerender } = render(<MorseScreen />);
+  test('show tree button aria-label updates after toggle', () => {
+    useMorseStore.setState({ showMorseTree: false });
+    const { getByLabelText, rerender } = render(<MorseScreen />);
 
-    expect(screen.getByText('Show tree')).toBeTruthy();
+    expect(getByLabelText('Show morse tree')).toBeTruthy();
 
     useMorseStore.getState().toggleMorseTree();
     rerender(<MorseScreen />);
 
-    expect(screen.getByText('Hide tree')).toBeTruthy();
+    expect(getByLabelText('Hide morse tree')).toBeTruthy();
+  });
+
+  test('back button navigates to menu', () => {
+    const { getByLabelText } = render(<MorseScreen />);
+
+    fireEvent.click(getByLabelText('Go back'));
+
+    expect(useNavigationStore.getState().currentScreen).toBe('menu');
   });
 });

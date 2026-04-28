@@ -25,7 +25,7 @@ describe('TapZone', () => {
 
   test('renders "press" label', () => {
     const { getByText } = render(<TapZone />);
-    expect(getByText('press')).toBeTruthy();
+    expect(getByText('PRESS')).toBeTruthy();
   });
 
   test('GestureDetector is rendered', () => {

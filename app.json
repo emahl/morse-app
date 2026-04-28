@@ -23,7 +23,11 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +40,12 @@
         }
       ],
       "expo-system-ui"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a73dbbed-146b-4475-b1a3-f246a891b92f"
+      }
+    },
+    "owner": "emahl"
   }
 }

@@ -15,15 +15,6 @@
     }
   },
   "submit": {
-    "production": {
-      "android": {
-        "serviceAccount": "./service-account.json",
-        "track": "internal"
-      },
-      "ios": {
-        "appleId": "",
-        "ascAppId": ""
-      }
-    }
+    "production": {}
   }
 }

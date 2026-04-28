@@ -57,7 +57,8 @@ describe('TextDisplayArea', () => {
       <TextDisplayArea onTextAreaPress={mockPress} />
     );
 
-    const touchableArea = container.querySelector('View');
+    // TouchableWithoutFeedback renders as a div in jsdom via react-native-web
+    const touchableArea = container.querySelector('div');
     if (touchableArea) {
       fireEvent.click(touchableArea);
     }
@@ -71,7 +72,6 @@ describe('TextDisplayArea', () => {
     useMorseStore.getState().addTap(TAPTYPE_DAH);
 
     const mockPress = jest.fn(() => {
-      // Simulate what MorseScreen does in manual mode
       if (useMorseStore.getState().morseSequence.length > 0) {
         useMorseStore.getState().commitCharacter();
       }
@@ -81,7 +81,7 @@ describe('TextDisplayArea', () => {
       <TextDisplayArea onTextAreaPress={mockPress} />
     );
 
-    const touchableArea = container.querySelector('View');
+    const touchableArea = container.querySelector('div');
     if (touchableArea) {
       fireEvent.click(touchableArea);
     }
@@ -94,7 +94,6 @@ describe('TextDisplayArea', () => {
     useMorseStore.setState({ automaticModeEnabled: false, text: 'HELLO' });
 
     const mockPress = jest.fn(() => {
-      // Simulate what MorseScreen does in manual mode
       if (useMorseStore.getState().morseSequence.length === 0) {
         useMorseStore.getState().insertSpace();
       }
@@ -104,7 +103,7 @@ describe('TextDisplayArea', () => {
       <TextDisplayArea onTextAreaPress={mockPress} />
     );
 
-    const touchableArea = container.querySelector('View');
+    const touchableArea = container.querySelector('div');
     if (touchableArea) {
       fireEvent.click(touchableArea);
     }
@@ -121,13 +120,11 @@ describe('TextDisplayArea', () => {
       <TextDisplayArea onTextAreaPress={mockPress} />
     );
 
-    const touchableArea = container.querySelector('View');
+    const touchableArea = container.querySelector('div');
     if (touchableArea) {
       fireEvent.click(touchableArea);
     }
 
-    // In automatic mode, the press handler does nothing
-    // The auto-commit is handled by TapZone timer
     expect(useMorseStore.getState().morseSequence).toContain(TAPTYPE_DIT);
   });
 

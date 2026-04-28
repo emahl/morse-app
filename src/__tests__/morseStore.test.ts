@@ -11,7 +11,7 @@ describe('Morse Store', () => {
 
   describe('addTap', () => {
     test('addTap with DIT adds to sequence and updates currentCharacter', () => {
-      const { addTap, morseSequence, currentCharacter } = useMorseStore.getState();
+      const { addTap } = useMorseStore.getState();
       addTap(TAPTYPE_DIT);
 
       expect(useMorseStore.getState().morseSequence).toContain(TAPTYPE_DIT);
@@ -101,12 +101,12 @@ describe('Morse Store', () => {
 
   describe('insertSpace', () => {
     test('insertSpace appends a space to text', () => {
+      useMorseStore.setState({ text: 'A' });
       const { insertSpace } = useMorseStore.getState();
-      const textBefore = useMorseStore.getState().text;
 
       insertSpace();
 
-      expect(useMorseStore.getState().text).toBe(textBefore + ' ');
+      expect(useMorseStore.getState().text).toBe('A ');
     });
 
     test('insertSpace works after commitCharacter', () => {
