@@ -7,7 +7,10 @@ import { useEducationalStore } from '../../store/educationalStore';
 import { LEVELS } from '../../data/levels';
 import { MultipleChoiceChallenge } from './MultipleChoiceChallenge';
 import { MorseInputChallenge } from './MorseInputChallenge';
+import { WordInputChallenge } from './WordInputChallenge';
+import { AudioCopyChallenge } from './AudioCopyChallenge';
 import { LessonCard } from './LessonCard';
+import { InfoCard } from './InfoCard';
 
 export const LevelScreen: React.FC = () => {
   const navigateTo = useNavigationStore((s) => s.navigateTo);
@@ -16,6 +19,7 @@ export const LevelScreen: React.FC = () => {
   const lastResult = useEducationalStore((s) => s.lastResult);
   const levelComplete = useEducationalStore((s) => s.levelComplete);
   const advanceChallenge = useEducationalStore((s) => s.advanceChallenge);
+  const retryChallenge = useEducationalStore((s) => s.retryChallenge);
   const resetLevel = useEducationalStore((s) => s.resetLevel);
 
   const level = LEVELS.find((l) => l.id === selectedLevelId);
@@ -62,7 +66,7 @@ export const LevelScreen: React.FC = () => {
   }
 
   // ── Active challenge ───────────────────────────────────────────────────────
-  const isLesson = challenge.type === 'lesson';
+  const isGotIt = challenge.type === 'lesson' || challenge.type === 'info';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,7 +86,7 @@ export const LevelScreen: React.FC = () => {
             key={i}
             style={[
               styles.progressDot,
-              c.type === 'lesson' && styles.progressDotLesson,
+              (c.type === 'lesson' || c.type === 'info') && styles.progressDotLesson,
               i < progress && styles.progressDotDone,
               i === currentChallengeIndex && styles.progressDotCurrent,
             ]}
@@ -91,16 +95,22 @@ export const LevelScreen: React.FC = () => {
       </View>
 
       {/* Challenge body */}
-      {isLesson ? (
-        <LessonCard challenge={challenge} />
+      {challenge.type === 'lesson' ? (
+        <LessonCard key={currentChallengeIndex} challenge={challenge} />
+      ) : challenge.type === 'info' ? (
+        <InfoCard key={currentChallengeIndex} challenge={challenge} />
+      ) : challenge.type === 'audio-copy' ? (
+        <AudioCopyChallenge key={currentChallengeIndex} challenge={challenge} />
       ) : challenge.type === 'multiple-choice' ? (
-        <MultipleChoiceChallenge challenge={challenge} />
+        <MultipleChoiceChallenge key={currentChallengeIndex} challenge={challenge} />
+      ) : challenge.type === 'word-input' ? (
+        <WordInputChallenge key={currentChallengeIndex} challenge={challenge} />
       ) : (
-        <MorseInputChallenge challenge={challenge} />
+        <MorseInputChallenge key={currentChallengeIndex} challenge={challenge} />
       )}
 
       {/* Bottom action area */}
-      {isLesson ? (
+      {isGotIt ? (
         <TouchableOpacity
           style={styles.gotItBar}
           onPress={advanceChallenge}
@@ -116,18 +126,27 @@ export const LevelScreen: React.FC = () => {
         ]}>
           <Text style={styles.feedbackIcon}>{lastResult === 'correct' ? '✓' : '✗'}</Text>
           <Text style={styles.feedbackText}>
-            {lastResult === 'correct'
-              ? 'Correct!'
-              : `Wrong — answer: ${challenge.type === 'multiple-choice' ? challenge.correctAnswer : challenge.targetCharacter}`}
+            {lastResult === 'correct' ? 'Correct!' : 'Wrong — try again!'}
           </Text>
-          <TouchableOpacity
-            onPress={advanceChallenge}
-            style={styles.nextBtn}
-            accessibilityLabel="Next challenge"
-          >
-            <Text style={styles.nextBtnText}>Next</Text>
-            <MaterialCommunityIcons name="arrow-right" size={16} color="#2C2B28" />
-          </TouchableOpacity>
+          {lastResult === 'correct' ? (
+            <TouchableOpacity
+              onPress={advanceChallenge}
+              style={styles.nextBtn}
+              accessibilityLabel="Next challenge"
+            >
+              <Text style={styles.nextBtnText}>Next</Text>
+              <MaterialCommunityIcons name="arrow-right" size={16} color="#2C2B28" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={retryChallenge}
+              style={styles.retryBtn}
+              accessibilityLabel="Retry challenge"
+            >
+              <MaterialCommunityIcons name="refresh" size={16} color="#F5F3EF" />
+              <Text style={styles.retryBtnText}>Retry</Text>
+            </TouchableOpacity>
+          )}
         </View>
       ) : null}
     </SafeAreaView>
@@ -239,6 +258,23 @@ const styles = StyleSheet.create({
   nextBtnText: {
     fontSize: 14,
     color: '#2C2B28',
+    fontFamily: 'monospace',
+    fontWeight: '700',
+  },
+  retryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A2A28',
+    borderWidth: 1,
+    borderColor: '#9A4A44',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 4,
+  },
+  retryBtnText: {
+    fontSize: 14,
+    color: '#F5F3EF',
     fontFamily: 'monospace',
     fontWeight: '700',
   },

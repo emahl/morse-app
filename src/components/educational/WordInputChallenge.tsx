@@ -1,54 +1,80 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MorseInputChallenge as MICChallenge } from '../../data/levels';
+import { WordInputChallenge as WICChallenge, sequenceToDisplay } from '../../data/levels';
 import { useEducationalStore } from '../../store/educationalStore';
 import { useMorseStore } from '../../store/morseStore';
 import { EduTapZone } from './EduTapZone';
 import { MorsePlayback } from './MorsePlayback';
-import { TAPTYPE_DIT } from '../../utility/constants';
-import { sequenceToDisplay } from '../../data/levels';
 
 interface Props {
-  challenge: MICChallenge;
+  challenge: WICChallenge;
 }
 
-export const MorseInputChallenge: React.FC<Props> = ({ challenge }) => {
-  const currentInput = useEducationalStore((state) => state.currentInput);
-  const clearInput = useEducationalStore((state) => state.clearInput);
-  const submitMorseInput = useEducationalStore((state) => state.submitMorseInput);
-  const lastResult = useEducationalStore((state) => state.lastResult);
-  const characterCommitDelay = useMorseStore((state) => state.characterCommitDelay);
+export const WordInputChallenge: React.FC<Props> = ({ challenge }) => {
+  const currentInput = useEducationalStore((s) => s.currentInput);
+  const clearInput = useEducationalStore((s) => s.clearInput);
+  const submitMorseInput = useEducationalStore((s) => s.submitMorseInput);
+  const lastResult = useEducationalStore((s) => s.lastResult);
+  const characterCommitDelay = useMorseStore((s) => s.characterCommitDelay);
 
   const autoSubmitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showHint, setShowHint] = useState(false);
 
-  const inputDisplay = currentInput.length > 0 ? sequenceToDisplay(currentInput) : '—';
+  const fullTargetSequence = challenge.targetCharacters.flatMap((c) => c.sequence);
   const hasInput = currentInput.length > 0;
   const answered = lastResult !== null;
 
-  const hint = challenge.targetSequence
-    .map((t) => (t === TAPTYPE_DIT ? '·' : '−'))
-    .join(' ');
+  // Compute how many target characters have been fully tapped so far
+  const completedCount = (() => {
+    let pos = 0;
+    let count = 0;
+    for (const { sequence } of challenge.targetCharacters) {
+      const slice = currentInput.slice(pos, pos + sequence.length);
+      const matches = slice.length === sequence.length && slice.every((v, i) => v === sequence[i]);
+      if (matches) { pos += sequence.length; count++; } else break;
+    }
+    return count;
+  })();
 
+  // Auto-submit after inactivity
   useEffect(() => {
     if (answered || !hasInput) return;
     autoSubmitTimer.current = setTimeout(submitMorseInput, characterCommitDelay);
-    return () => {
-      if (autoSubmitTimer.current) clearTimeout(autoSubmitTimer.current);
-    };
+    return () => { if (autoSubmitTimer.current) clearTimeout(autoSubmitTimer.current); };
   }, [currentInput, answered]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Answer reference shown after correct/incorrect
+  const targetDisplay = challenge.targetCharacters
+    .map((c) => sequenceToDisplay(c.sequence))
+    .join('   ');
 
   return (
     <View style={styles.container}>
       <Text style={styles.instruction}>{challenge.instruction}</Text>
 
+      {/* Character reference cards */}
+      <View style={styles.referenceRow}>
+        {challenge.targetCharacters.map(({ char, sequence }, i) => {
+          const isDone = i < completedCount;
+          return (
+            <View key={char} style={[styles.charCard, isDone && styles.charCardDone]}>
+              <Text style={[styles.charLetter, isDone && styles.charLetterDone]}>{char}</Text>
+              <Text style={[styles.charMorse, isDone && styles.charMorseDone]}>
+                {sequenceToDisplay(sequence)}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+
+      {/* Input display */}
       <View style={styles.inputBox}>
         <Text style={styles.inputLabel}>Your input</Text>
         <Text style={[styles.inputDisplay, !hasInput && styles.inputEmpty]}>
-          {inputDisplay}
+          {hasInput ? sequenceToDisplay(currentInput) : '—'}
         </Text>
         {answered && (
-          <Text style={styles.answerHint}>Answer: {hint}</Text>
+          <Text style={styles.answerHint}>{targetDisplay}</Text>
         )}
       </View>
 
@@ -65,11 +91,10 @@ export const MorseInputChallenge: React.FC<Props> = ({ challenge }) => {
         </TouchableOpacity>
       )}
 
-      {/* Hint panel */}
       {showHint && !answered && (
         <View style={styles.hintCard}>
-          <Text style={styles.hintLabel}>The morse code for  {challenge.targetCharacter}</Text>
-          <MorsePlayback sequence={challenge.targetSequence} autoPlay={false} />
+          <Text style={styles.hintLabel}>Full sequence for  {challenge.targetWord}</Text>
+          <MorsePlayback sequence={fullTargetSequence} autoPlay={false} />
         </View>
       )}
 
@@ -106,18 +131,55 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   instruction: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#F5F3EF',
     fontFamily: 'monospace',
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 24,
+  },
+  referenceRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  charCard: {
+    flex: 1,
+    backgroundColor: '#373532',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#4A4744',
+    paddingVertical: 12,
+    alignItems: 'center',
+    gap: 6,
+  },
+  charCardDone: {
+    backgroundColor: 'rgba(232, 128, 106, 0.12)',
+    borderColor: 'rgba(232, 128, 106, 0.5)',
+  },
+  charLetter: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#9A9590',
+    fontFamily: 'monospace',
+  },
+  charLetterDone: {
+    color: '#E8806A',
+  },
+  charMorse: {
+    fontSize: 14,
+    color: '#4A4744',
+    fontFamily: 'monospace',
+    letterSpacing: 3,
+  },
+  charMorseDone: {
+    color: '#E8806A',
   },
   inputBox: {
     backgroundColor: '#373532',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#4A4744',
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     alignItems: 'center',
     gap: 4,
@@ -130,10 +192,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   inputDisplay: {
-    fontSize: 32,
+    fontSize: 22,
     color: '#E8806A',
     fontFamily: 'monospace',
-    letterSpacing: 8,
+    letterSpacing: 5,
     marginTop: 4,
   },
   inputEmpty: {
@@ -144,6 +206,7 @@ const styles = StyleSheet.create({
     color: '#9A9590',
     fontFamily: 'monospace',
     marginTop: 6,
+    letterSpacing: 4,
   },
   hintToggle: {
     alignSelf: 'center',
@@ -161,7 +224,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(232, 128, 106, 0.2)',
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 20,
     alignItems: 'center',
     gap: 12,

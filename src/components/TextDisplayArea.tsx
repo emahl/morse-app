@@ -17,6 +17,9 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
   const text = useMorseStore((state) => state.text);
   const currentCharacter = useMorseStore((state) => state.currentCharacter);
   const ditDahText = useMorseStore((state) => state.ditDahText);
+  const pressDurationThreshold = useMorseStore((state) => state.pressDurationThreshold);
+  // WPM estimate: standard PARIS word = 50 dits; wpm = 1200 / dit_ms
+  const wpm = Math.round(1200 / pressDurationThreshold);
 
   const backgroundAnim = useSharedValue(300);
   const fadeAnim = useSharedValue(0);
@@ -70,6 +73,7 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
       <View style={styles.container}>
         <Animated.Text style={[styles.currentCharacter, glowStyle]} testID="current-character">{currentCharacter}</Animated.Text>
         <Text style={styles.text} testID="accumulated-text">{text}</Text>
+        <Text style={styles.wpm}>≈ {wpm} WPM</Text>
 
         <Animated.View style={[styles.ditDahOverlay, backgroundStyle]} pointerEvents="none">
           <Animated.Text style={[styles.ditDahText, fadeStyle]} testID="dit-dah-text">
@@ -83,7 +87,7 @@ export const TextDisplayArea: React.FC<TextDisplayAreaProps> = ({ onTextAreaPres
 
 const styles = StyleSheet.create({
   container: {
-    flex: 3,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#373532',
@@ -101,6 +105,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 16,
     color: '#C8C3BE',
+  },
+  wpm: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    color: '#4A4744',
+    letterSpacing: 1,
+    marginTop: 8,
   },
   ditDahOverlay: {
     ...StyleSheet.absoluteFillObject,

@@ -2,7 +2,7 @@ import { AudioContext } from 'react-native-audio-api';
 
 const MORSE_FREQUENCY = 700; // Hz
 const DIT_DURATION = 150; // ms
-const DAH_DURATION = 300; // ms
+const DAH_DURATION = 450; // ms — ITU standard: 3× dit
 const GAIN_VALUE = 0.3; // 0–1
 
 let audioContext: AudioContext | null = null;

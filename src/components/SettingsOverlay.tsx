@@ -128,7 +128,7 @@ export const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ visible }) => 
 
         <StepperRow
           label="Press threshold"
-          sublabel="Short press = dit, long press = dah"
+          sublabel={`Short = dit, long = dah  ·  ≈ ${Math.round(1200 / pressDurationThreshold)} WPM`}
           value={pressDurationThreshold}
           unit="ms"
           step={25}

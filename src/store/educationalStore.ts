@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { TapType } from '../utility/constants';
-import { LEVELS, MorseInputChallenge, SkillLevel } from '../data/levels';
+import { LEVELS, SkillLevel } from '../data/levels';
 import { appJSONStorage } from '../utility/storage';
 
 function arraysEqual(a: TapType[], b: TapType[]): boolean {
@@ -32,6 +32,7 @@ export interface EducationalStore {
   submitAnswer: (answer: string) => void;
   submitMorseInput: () => void;
   advanceChallenge: () => void;
+  retryChallenge: () => void;
   resetLevel: () => void;
 }
 
@@ -75,7 +76,7 @@ export const useEducationalStore = create<EducationalStore>()(
         const level = LEVELS.find((l) => l.id === selectedLevelId);
         if (!level) return;
         const challenge = level.challenges[currentChallengeIndex];
-        if (challenge.type !== 'multiple-choice') return;
+        if (challenge.type !== 'multiple-choice' && challenge.type !== 'audio-copy') return;
         const isCorrect =
           answer.trim().toUpperCase() === challenge.correctAnswer.trim().toUpperCase();
         set({ lastResult: isCorrect ? 'correct' : 'incorrect', selectedAnswer: answer });
@@ -85,8 +86,13 @@ export const useEducationalStore = create<EducationalStore>()(
         const { selectedLevelId, currentChallengeIndex, currentInput } = get();
         const level = LEVELS.find((l) => l.id === selectedLevelId);
         if (!level) return;
-        const challenge = level.challenges[currentChallengeIndex] as MorseInputChallenge;
-        const isCorrect = arraysEqual(currentInput, challenge.targetSequence);
+        const challenge = level.challenges[currentChallengeIndex];
+        if (challenge.type !== 'morse-input' && challenge.type !== 'word-input') return;
+        const targetSeq =
+          challenge.type === 'word-input'
+            ? challenge.targetCharacters.flatMap((c) => c.sequence)
+            : challenge.targetSequence;
+        const isCorrect = arraysEqual(currentInput, targetSeq);
         set({ lastResult: isCorrect ? 'correct' : 'incorrect' });
       },
 
@@ -115,6 +121,10 @@ export const useEducationalStore = create<EducationalStore>()(
             selectedAnswer: null,
           });
         }
+      },
+
+      retryChallenge: () => {
+        set({ lastResult: null, selectedAnswer: null, currentInput: [] });
       },
 
       resetLevel: () => {

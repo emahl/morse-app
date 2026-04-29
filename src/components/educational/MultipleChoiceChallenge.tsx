@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MultipleChoiceChallenge as MCChallenge, sequenceToDisplay } from '../../data/levels';
 import { useEducationalStore } from '../../store/educationalStore';
@@ -8,9 +8,17 @@ interface Props {
 }
 
 export const MultipleChoiceChallenge: React.FC<Props> = ({ challenge }) => {
-  const submitAnswer = useEducationalStore((state) => state.submitAnswer);
-  const lastResult = useEducationalStore((state) => state.lastResult);
-  const selectedAnswer = useEducationalStore((state) => state.selectedAnswer);
+  const submitAnswer = useEducationalStore((s) => s.submitAnswer);
+  const lastResult = useEducationalStore((s) => s.lastResult);
+  const selectedAnswer = useEducationalStore((s) => s.selectedAnswer);
+
+  // Shuffle once on mount so the correct answer isn't always in the same position.
+  // The component remounts on every new challenge (key={currentChallengeIndex} in LevelScreen)
+  // so this is stable per challenge but fresh on each new one or after retry.
+  const shuffledOptions = useMemo(
+    () => [...challenge.options].sort(() => Math.random() - 0.5),
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const morseDisplay = challenge.morseSequence ? sequenceToDisplay(challenge.morseSequence) : null;
   const answered = lastResult !== null;
@@ -26,7 +34,7 @@ export const MultipleChoiceChallenge: React.FC<Props> = ({ challenge }) => {
       )}
 
       <View style={styles.options}>
-        {challenge.options.map((option) => {
+        {shuffledOptions.map((option) => {
           const isCorrect = option === challenge.correctAnswer;
           const isPicked = option === selectedAnswer;
 
@@ -35,14 +43,17 @@ export const MultipleChoiceChallenge: React.FC<Props> = ({ challenge }) => {
               key={option}
               style={[
                 styles.option,
-                answered && isCorrect ? styles.optionCorrect : undefined,
-                answered && isPicked ? styles.optionWrong : undefined,
+                answered && lastResult === 'correct' && isCorrect ? styles.optionCorrect : undefined,
+                answered && lastResult === 'incorrect' && isPicked ? styles.optionWrong : undefined,
               ]}
               onPress={() => !answered && submitAnswer(option)}
               disabled={answered}
               accessibilityLabel={`Option ${option}`}
             >
-              <Text style={[styles.optionText, answered && isCorrect ? styles.optionTextCorrect : undefined]}>
+              <Text style={[
+                styles.optionText,
+                answered && lastResult === 'correct' && isCorrect ? styles.optionTextCorrect : undefined,
+              ]}>
                 {option}
               </Text>
             </TouchableOpacity>
@@ -99,8 +110,9 @@ const styles = StyleSheet.create({
     borderColor: '#4A9A6A',
   },
   optionWrong: {
-    backgroundColor: '#4A2A28',
-    borderColor: '#9A4A44',
+    backgroundColor: '#2C2B28',
+    borderColor: '#4A4744',
+    opacity: 0.45,
   },
   optionText: {
     fontSize: 18,

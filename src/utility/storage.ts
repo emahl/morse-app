@@ -1,10 +1,4 @@
-import { Platform } from 'react-native';
 import { createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const appJSONStorage =
-  Platform.OS === 'web'
-    ? createJSONStorage(() => localStorage)
-    : createJSONStorage(
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        () => require('@react-native-async-storage/async-storage').default,
-      );
+export const appJSONStorage = createJSONStorage(() => AsyncStorage);

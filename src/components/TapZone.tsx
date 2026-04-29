@@ -86,11 +86,10 @@ export const TapZone: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#2C2B28',
-    overflow: 'hidden',
   },
   content: {
     flex: 1,

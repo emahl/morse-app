@@ -1,104 +1,114 @@
 import { Page } from '@playwright/test';
 
 /**
- * Page Object / Fixture for Morse App
- * Encapsulates common interactions like dit/dah presses.
- * Call navigateToFreeMode() first if your test needs the TapZone.
+ * Page Object / Fixture for Morse App.
+ * For free-mode tests call navigateToFreeMode() first.
+ * For learn-mode tests call resetAndNavigateToLearnMode() first.
  */
 export class MorseApp {
   constructor(public page: Page) {}
 
-  /**
-   * Navigate to Free Mode from the main menu
-   */
+  /** Clear persisted state and reload so every test starts clean. */
+  async reset() {
+    await this.page.evaluate(() => window.localStorage.clear());
+    await this.page.reload();
+    await this.page.waitForSelector('text=MORSE CODE');
+  }
+
+  // ── Free mode ─────────────────────────────────────────────────────────────
+
   async navigateToFreeMode() {
     await this.page.locator('[aria-label="Free mode"]').click();
   }
 
-  /**
-   * Perform a "dit" (short press) — hold for ~100ms (under 150ms threshold)
-   */
   async performDit() {
     const box = await this.page.locator('[data-testid="tap-zone"]').boundingBox();
     if (!box) throw new Error('tap-zone not found');
-
     const cx = box.x + box.width / 2;
     const cy = box.y + box.height / 2;
-
     await this.page.mouse.move(cx, cy);
     await this.page.mouse.down();
-    await this.page.waitForTimeout(100); // Under 150ms threshold = dit
+    await this.page.waitForTimeout(100);
     await this.page.mouse.up();
   }
 
-  /**
-   * Perform a "dah" (long press) — hold for ~250ms (over 150ms threshold)
-   */
   async performDah() {
     const box = await this.page.locator('[data-testid="tap-zone"]').boundingBox();
     if (!box) throw new Error('tap-zone not found');
-
     const cx = box.x + box.width / 2;
     const cy = box.y + box.height / 2;
-
     await this.page.mouse.move(cx, cy);
     await this.page.mouse.down();
-    await this.page.waitForTimeout(250); // Over 150ms threshold = dah
+    await this.page.waitForTimeout(350); // Over 250ms threshold = dah
     await this.page.mouse.up();
   }
 
-  /**
-   * Wait for the auto-commit timer (800ms CHARACTER_DELAY_DURATION)
-   */
   async waitForAutoCommit() {
-    await this.page.waitForTimeout(1000); // Slightly over 800ms
+    await this.page.waitForTimeout(1000);
   }
 
-  /**
-   * Get the current character preview text
-   */
   async getCurrentCharacter(): Promise<string> {
     return await this.page.locator('[data-testid="current-character"]').textContent() ?? '';
   }
 
-  /**
-   * Get the accumulated text
-   */
   async getAccumulatedText(): Promise<string> {
     return await this.page.locator('[data-testid="accumulated-text"]').textContent() ?? '';
   }
 
-  /**
-   * Get the dit/dah overlay text
-   */
   async getDitDahText(): Promise<string> {
     return await this.page.locator('[data-testid="dit-dah-text"]').textContent() ?? '';
   }
 
-  /**
-   * Click the "Clear all text" button (icon-only, identified by aria-label)
-   */
   async clickClear() {
     await this.page.locator('[aria-label="Clear all text"]').click();
   }
 
-  /**
-   * Click the tree toggle button (icon-only, identified by aria-label)
-   */
   async clickShowTree() {
     await this.page.locator('[aria-label="Show morse tree"], [aria-label="Hide morse tree"]').click();
   }
 
-  /**
-   * Open settings panel and toggle the auto mode switch
-   */
   async toggleAutoMode() {
-    const settingsBtn = this.page.locator('[aria-label="Open settings"], [aria-label="Close settings"]');
     const isOpen = await this.page.locator('[data-testid="auto-mode-switch"]').isVisible();
     if (!isOpen) {
-      await settingsBtn.click();
+      await this.page.locator('[aria-label="Open settings"], [aria-label="Close settings"]').click();
       await this.page.waitForTimeout(300);
     }
     await this.page.locator('[data-testid="auto-mode-switch"]').click();
+  }
+
+  // ── Learn mode ────────────────────────────────────────────────────────────
+
+  /** Navigate from MainMenu into the learn flow (handles skill-select if needed). */
+  async navigateToLearnMode() {
+    await this.page.locator('[aria-label="Learn morse code"]').click();
+  }
+
+  async selectSkillLevel(level: 'Complete beginner' | 'Some experience' | 'I know morse') {
+    await this.page.getByText(level).click();
+    await this.page.waitForSelector('text=Learn Morse Code');
+  }
+
+  async openLevel(levelNumber: number) {
+    await this.page.locator(`[aria-label^="Level ${levelNumber}:"]`).click();
+  }
+
+  /** Advance past all lesson cards in the current level until a quiz challenge appears. */
+  async skipLessons() {
+    while (await this.page.locator('[aria-label="Got it"]').isVisible()) {
+      await this.page.locator('[aria-label="Got it"]').click();
+      await this.page.waitForTimeout(150);
+    }
+  }
+
+  async tapOption(option: string) {
+    await this.page.locator(`[aria-label="Option ${option}"]`).click();
+  }
+
+  async clickNext() {
+    await this.page.locator('[aria-label="Next challenge"]').click();
+  }
+
+  async clickRetry() {
+    await this.page.locator('[aria-label="Retry challenge"]').click();
   }
 }

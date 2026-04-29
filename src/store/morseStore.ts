@@ -49,7 +49,7 @@ export const useMorseStore = create<MorseStore>()(
       showSettings: false,
 
       // Settings defaults
-      pressDurationThreshold: 150,
+      pressDurationThreshold: 250,
       characterCommitDelay: 800,
       audioEnabled: true,
       hapticsEnabled: true,
